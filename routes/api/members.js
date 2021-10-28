@@ -14,12 +14,45 @@ router.get('/:id', (req, res) => {
     const found = members.some(member => member.id === parseInt(req.params.id));
 
     if (found) {
-        res.json(members.filter(member => member.id === parseInt(req.params.id)));
+        const updatedMember = members.filter(member => member.id === parseInt(req.params.id));
+        res.json(updatedMember);
+    } else {
+        res.status(400).json({ msg: `No member with the id of ${req.params.id}` });
+    }        
+});
+
+// Delete specific member
+router.delete('/:id', (req, res) => {
+    const found = members.some(member => member.id === parseInt(req.params.id));
+
+    if (found) {
+        res.json({ 
+            msg: `Member with the id of ${req.params.id} has been deleted`,
+            members: members.filter(member => member.id !== parseInt(req.params.id)) });        
+    } else {
+        res.status(400).json({ msg: `No member with the id of ${req.params.id}` });
+    }        
+});
+
+// Update member
+router.put('/:id', (req, res) => {
+    const found = members.some(member => member.id === parseInt(req.params.id));
+
+    if (found) {
+        const updatedMember = req.body;
+        members.forEach(member => {
+            if (member.id === parseInt(req.params.id)) {
+                member.name = updatedMember.name ? updatedMember.name : member.name;
+                member.email = updatedMember.email ? updatedMember.email : member.email;
+            }
+
+            res.json({ msg: 'Member updated', member });
+        });
     } else {
         res.status(400).json({ msg: `No member with the id of ${req.params.id}` });
     }
-  });
-
+});
+    
 // Create member
 router.post('/', (req, res) => {
     const newMember = {
@@ -34,8 +67,9 @@ router.post('/', (req, res) => {
     }
 
     members.push(newMember);
-    
+
     res.json(members);
+    //res.redirect('/');
 });  
 
 
